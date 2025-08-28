@@ -65,8 +65,8 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
 
     return Padding(
       padding: EdgeInsets.only(
-        left: isUser ? 64 : 16,
-        right: isUser ? 16 : 64,
+        left: isUser ? 40 : 16,
+        right: isUser ? 16 : 40,
         top: 8,
         bottom: 8,
       ),

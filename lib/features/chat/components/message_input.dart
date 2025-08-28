@@ -92,7 +92,8 @@ class _MessageInputState extends State<MessageInput> {
                   onKeyEvent: _handleKeyEvent,
                   child: TextField(
                     controller: widget.controller,
-                    maxLines: null,
+                    maxLines: 8,
+                    minLines: 1,
                     textCapitalization: TextCapitalization.sentences,
                     onTapOutside: (_) => FocusScope.of(context).unfocus(),
                     keyboardType: TextInputType.multiline,
@@ -189,7 +190,7 @@ class _MessageInputState extends State<MessageInput> {
           ),
           Positioned(
             right: 16,
-            top: 32,
+            bottom: 49,
             child: Material(
               color: _canSend
                   ? theme.colorScheme.primary
