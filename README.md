@@ -6,8 +6,8 @@ A simple Flutter chat app with an AI Dungeon Master for D&D-style roleplay adven
 
 - 💬 Chat with an AI that acts as your D&D Dungeon Master
 - 🧠 Powered by Google's Gemini AI with custom D&D instructions
-- 💾 Saves your chat history locally
-- Built with **Flutter**, **BLoC** state management, **Hive** local database, **Firebase AI** (Gemini), and **Markdown** support
+- 💾 All messages stored locally on your device using Hive database
+- 💙 Built with Flutter for cross-platform development
 
 ## Setup ⚙️
 
@@ -63,6 +63,7 @@ lib/
 ## Key files 📄
 
 - `lib/constants/ai_system_instructions.dart` - The AI's D&D personality
+- `lib/data/` - Data layer (models, repositories, services)
 - `lib/features/chat/` - All the chat functionality
 - `lib/localizations/app_en.arb` - UI text
 
@@ -71,6 +72,16 @@ lib/
 Want to change how the AI behaves? Edit the system instructions in `lib/constants/ai_system_instructions.dart`.
 
 That's it! Have fun adventuring! 🎲
+
+## Tech Stack 🛠️
+
+- **Flutter** - Cross-platform UI framework
+- **BLoC** - State management pattern for predictable app architecture
+- **Hive** - Lightweight, fast NoSQL database (messages stored locally on device)
+- **Firebase AI (Gemini)** - Google's advanced AI model (conversations sent for processing but not stored or linked to identity)
+- **Markdown** - Rich text formatting for enhanced message display
+- **i18n** - Internationalization support for multiple languages
+- **Analytics** - Basic usage data collection (no personal data or user identification)
 
 ## License 📜
 
