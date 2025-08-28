@@ -41,36 +41,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          BlocSelector<ChatCubit, ChatState, bool>(
-            selector: (state) =>
-                state.loading ||
-                state.generatingResponse ||
-                state.messages.isEmpty,
-            builder: (context, disabled) {
-              return Padding(
-                padding: const EdgeInsets.all(8),
-                child: IconButton(
-                  style: IconButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    foregroundColor: theme.colorScheme.onPrimaryContainer,
-                  ),
-                  onPressed: disabled
-                      ? null
-                      : () async => _showClearDialog(context),
-                  icon: const Icon(Icons.refresh_outlined),
-                  tooltip: l10n.clearChat,
-                ),
-              );
-            },
-          ),
-        ],
-      ),
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 800),
@@ -103,11 +73,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    child: MessageInput(
-                      controller: _messageInputController,
-                      onSend: () => _sendMessage(context),
-                      isLoading: state.generatingResponse,
-                      isDisabled: state.loading,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        MessageInput(
+                          controller: _messageInputController,
+                          onSend: () => _sendMessage(context),
+                          isLoading: state.generatingResponse,
+                          isDisabled: state.loading,
+                          onClear: () => _showClearDialog(context),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -122,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildEmptyState() {
     return Padding(
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + kToolbarHeight + 8,
+        top: MediaQuery.of(context).padding.top + 8,
         bottom: 100,
       ),
       child: Center(

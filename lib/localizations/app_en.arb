@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "D&D Adventure Companion",
-  "clearChat": "Delete All Messages",
+  "clearChat": "Reset Chat",
   "startAdventure": "Welcome to your personal D&D adventure!",
   "askAnything": "I'm your AI Dungeon Master, ready to guide you through epic roleplay adventures. Simply tell me what you want to play and which universe you'd like to explore - I'll set up everything for you! Veterans and newcomers alike are welcome to embark on this journey.",
   "clearChatTitle": "Refresh Adventure",

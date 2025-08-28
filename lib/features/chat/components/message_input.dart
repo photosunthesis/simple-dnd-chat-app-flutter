@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simple_ai_dnd_chat_app/features/chat/chat_cubit.dart';
 import 'package:simple_ai_dnd_chat_app/localizations/app_localizations.dart';
 
 class MessageInput extends StatefulWidget {
@@ -8,6 +10,7 @@ class MessageInput extends StatefulWidget {
     required this.onSend,
     required this.isLoading,
     required this.isDisabled,
+    this.onClear,
     super.key,
   });
 
@@ -15,6 +18,7 @@ class MessageInput extends StatefulWidget {
   final VoidCallback onSend;
   final bool isLoading;
   final bool isDisabled;
+  final VoidCallback? onClear;
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -81,79 +85,119 @@ class _MessageInputState extends State<MessageInput> {
                 ],
               ),
             ),
-            child: Focus(
-              onKeyEvent: _handleKeyEvent,
-              child: TextField(
-                controller: widget.controller,
-                maxLines: null,
-                textCapitalization: TextCapitalization.sentences,
-                onTapOutside: (_) => FocusScope.of(context).unfocus(),
-                keyboardType: TextInputType.multiline,
-                textInputAction: TextInputAction.newline,
-                decoration: InputDecoration(
-                  hintText: localizations.typeMessage,
-                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withAlpha(153),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withAlpha(120),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Focus(
+                  onKeyEvent: _handleKeyEvent,
+                  child: TextField(
+                    controller: widget.controller,
+                    maxLines: null,
+                    textCapitalization: TextCapitalization.sentences,
+                    onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: TextInputAction.newline,
+                    decoration: InputDecoration(
+                      hintText: localizations.typeMessage,
+                      hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withAlpha(153),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withAlpha(
+                            120,
+                          ),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withAlpha(
+                            120,
+                          ),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withAlpha(
+                            120,
+                          ),
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withAlpha(
+                            120,
+                          ),
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withAlpha(
+                            120,
+                          ),
+                        ),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withAlpha(
+                            120,
+                          ),
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.only(
+                        left: 16,
+                        right: 48,
+                        top: 12,
+                        bottom: 12,
+                      ),
                     ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withAlpha(120),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withAlpha(120),
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withAlpha(120),
-                    ),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withAlpha(120),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withAlpha(120),
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.only(
-                    left: 16,
-                    right: 48,
-                    top: 12,
-                    bottom: 12,
+                    style: theme.textTheme.bodyMedium,
+                    enabled: !widget.isLoading,
                   ),
                 ),
-                style: theme.textTheme.bodyMedium,
-                enabled: !widget.isLoading,
-              ),
+                BlocSelector<ChatCubit, ChatState, bool>(
+                  selector: (state) =>
+                      state.loading ||
+                      state.generatingResponse ||
+                      state.messages.isEmpty,
+                  builder: (context, disabled) {
+                    return Container(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: GestureDetector(
+                        onTap: disabled ? null : widget.onClear?.call,
+                        child: Text(
+                          localizations.clearChat,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            decoration: TextDecoration.underline,
+                            color: disabled
+                                ? theme.colorScheme.onSurface.withAlpha(128)
+                                : theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           Positioned(
             right: 16,
-            bottom: 20,
+            top: 32,
             child: Material(
               color: _canSend
                   ? theme.colorScheme.primary
                   : theme.colorScheme.outline.withAlpha(77),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 onTap: _canSend ? widget.onSend : null,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
                 child: Container(
                   width: 32,
                   height: 32,
