@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:simple_ai_dnd_chat_app/localizations/app_localizations.dart';
 
 class MessageInput extends StatefulWidget {
@@ -39,6 +40,21 @@ class _MessageInputState extends State<MessageInput> {
     if (hasText != _hasText) setState(() => _hasText = hasText);
   }
 
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+      if (HardwareKeyboard.instance.isShiftPressed) {
+        return KeyEventResult.ignored;
+      }
+
+      if (_canSend) {
+        widget.onSend();
+        return KeyEventResult.handled;
+      }
+    }
+
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -63,60 +79,66 @@ class _MessageInputState extends State<MessageInput> {
                 ],
               ),
             ),
-            child: TextField(
-              controller: widget.controller,
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(
-                hintText: localizations.typeMessage,
-                hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withAlpha(153),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withAlpha(120),
+            child: Focus(
+              onKeyEvent: _handleKeyEvent,
+              child: TextField(
+                controller: widget.controller,
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
+                onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                decoration: InputDecoration(
+                  hintText: localizations.typeMessage,
+                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withAlpha(153),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withAlpha(120),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withAlpha(120),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withAlpha(120),
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withAlpha(120),
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withAlpha(120),
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withAlpha(120),
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.only(
+                    left: 16,
+                    right: 48,
+                    top: 12,
+                    bottom: 12,
                   ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withAlpha(120),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withAlpha(120),
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withAlpha(120),
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withAlpha(120),
-                  ),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withAlpha(120),
-                  ),
-                ),
-                contentPadding: const EdgeInsets.only(
-                  left: 16,
-                  right: 48,
-                  top: 12,
-                  bottom: 12,
-                ),
+                style: theme.textTheme.bodyMedium,
+                enabled: !widget.isLoading,
               ),
-              style: theme.textTheme.bodyMedium,
-              enabled: !widget.isLoading,
             ),
           ),
           Positioned(

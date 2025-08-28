@@ -88,13 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ? _buildEmptyState()
                       : ListView.builder(
                           controller: _scrollController,
-                          padding: EdgeInsets.only(
-                            top:
-                                MediaQuery.of(context).padding.top +
-                                kToolbarHeight +
-                                8,
-                            bottom: 80,
-                          ),
+                          padding: const EdgeInsets.only(top: 20, bottom: 80),
                           itemCount: state.messages.length,
                           itemBuilder: (context, index) {
                             final message = state.messages[index];
@@ -112,7 +106,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: MessageInput(
                       controller: _messageInputController,
                       onSend: () => _sendMessage(context),
-                      isLoading: state.generatingResponse,
+                      isLoading:
+                          state.loading ||
+                          state.generatingResponse ||
+                          state.messages.isEmpty,
                     ),
                   ),
                 ],
