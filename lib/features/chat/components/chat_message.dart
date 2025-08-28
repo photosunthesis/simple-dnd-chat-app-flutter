@@ -198,91 +198,86 @@ class _MarkdownText extends StatelessWidget {
     );
 
     final nodes = document.parseLines(content.split('\n'));
+    final spans = <TextSpan>[];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: nodes.map((node) => _buildNode(context, node, theme)).toList(),
-    );
+    for (var i = 0; i < nodes.length; i++) {
+      spans.addAll(_buildNodeSpans(nodes[i], theme, isFirst: i == 0));
+    }
+
+    return SelectableText.rich(TextSpan(children: spans), style: style);
   }
 
-  Widget _buildNode(BuildContext context, md.Node node, ThemeData theme) {
+  List<TextSpan> _buildNodeSpans(
+    md.Node node,
+    ThemeData theme, {
+    bool isFirst = false,
+  }) {
+    final spans = <TextSpan>[];
+
     if (node is md.Element) {
       switch (node.tag) {
         case 'h1':
         case 'h2':
         case 'h3':
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: SelectableText(
-              node.textContent,
+          spans.add(
+            TextSpan(
+              text: node.textContent,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
+                height: 1.3,
               ),
             ),
           );
+          spans.add(const TextSpan(text: '\n'));
+          break;
         case 'p':
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: _buildInlineContent(context, node, theme),
-          );
+          if (!isFirst) {
+            spans.add(const TextSpan(text: '\n'));
+          }
+          spans.addAll(_buildInlineSpans(node, theme));
+          spans.add(const TextSpan(text: '\n'));
+          break;
         case 'code':
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withAlpha(26),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: theme.colorScheme.outline.withAlpha(51),
-              ),
-            ),
-            child: SelectableText(
-              node.textContent,
+          if (!isFirst) {
+            spans.add(const TextSpan(text: '\n'));
+          }
+          spans.add(
+            TextSpan(
+              text: node.textContent,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontFamily: 'IBMPlexMono',
+                backgroundColor: theme.colorScheme.surface.withAlpha(26),
+                height: 1.3,
               ),
             ),
           );
+          spans.add(const TextSpan(text: '\n'));
+          break;
         case 'ul':
         case 'ol':
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  node.children?.map((child) {
-                    if (child is md.Element && child.tag == 'li') {
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 16, bottom: 4),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SelectableText('• ', style: style),
-                            Expanded(
-                              child: _buildInlineContent(context, child, theme),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }).toList() ??
-                  [],
-            ),
-          );
+          if (!isFirst) {
+            spans.add(const TextSpan(text: '\n'));
+          }
+          for (final child in node.children ?? []) {
+            if (child is md.Element && child.tag == 'li') {
+              spans.add(const TextSpan(text: '•'));
+              spans.addAll(_buildInlineSpans(child, theme));
+              spans.add(const TextSpan(text: '\n'));
+            }
+          }
+          spans.add(const TextSpan(text: '\n'));
+          break;
         default:
-          return _buildInlineContent(context, node, theme);
+          spans.addAll(_buildInlineSpans(node, theme));
       }
     } else {
-      return SelectableText(node.textContent, style: style);
+      spans.add(TextSpan(text: node.textContent, style: style));
     }
+
+    return spans;
   }
 
-  Widget _buildInlineContent(
-    BuildContext context,
-    md.Element element,
-    ThemeData theme,
-  ) {
+  List<TextSpan> _buildInlineSpans(md.Element element, ThemeData theme) {
     final spans = <TextSpan>[];
 
     for (final child in element.children ?? []) {
@@ -325,7 +320,7 @@ class _MarkdownText extends StatelessWidget {
       }
     }
 
-    return SelectableText.rich(TextSpan(children: spans));
+    return spans;
   }
 }
 

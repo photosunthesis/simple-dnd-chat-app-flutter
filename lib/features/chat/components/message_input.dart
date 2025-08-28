@@ -7,12 +7,14 @@ class MessageInput extends StatefulWidget {
     required this.controller,
     required this.onSend,
     required this.isLoading,
+    required this.isDisabled,
     super.key,
   });
 
   final TextEditingController controller;
   final VoidCallback onSend;
   final bool isLoading;
+  final bool isDisabled;
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -163,7 +165,7 @@ class _MessageInputState extends State<MessageInput> {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              _canSend
+                              _canSend && !widget.isDisabled
                                   ? theme.colorScheme.onPrimary
                                   : theme.colorScheme.onSurface.withAlpha(128),
                             ),

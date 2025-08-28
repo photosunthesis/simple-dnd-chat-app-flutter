@@ -106,10 +106,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: MessageInput(
                       controller: _messageInputController,
                       onSend: () => _sendMessage(context),
-                      isLoading:
-                          state.loading ||
-                          state.generatingResponse ||
-                          state.messages.isEmpty,
+                      isLoading: state.generatingResponse,
+                      isDisabled: state.loading,
                     ),
                   ),
                 ],
