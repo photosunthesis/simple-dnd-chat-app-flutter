@@ -15,8 +15,10 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   late final theme = Theme.of(context);
   late final l10n = AppLocalizations.of(context)!;
+
   final _messageInputController = TextEditingController();
   final _scrollController = ScrollController();
+  final _messageKeys = <int, GlobalKey>{};
 
   @override
   void initState() {
@@ -74,7 +76,10 @@ class _ChatScreenState extends State<ChatScreen> {
           constraints: const BoxConstraints(maxWidth: 800),
           child: BlocConsumer<ChatCubit, ChatState>(
             listener: (context, state) {
-              if (state.messages.isNotEmpty) _scrollToBottom();
+              if (state.shouldScrollToLatest && state.latestMessageIndex >= 0) {
+                _scrollToMessageIndex(state.latestMessageIndex);
+                context.read<ChatCubit>().markScrollCompleted();
+              }
             },
             builder: (context, state) {
               return Stack(
@@ -93,7 +98,11 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemCount: state.messages.length,
                           itemBuilder: (context, index) {
                             final message = state.messages[index];
-                            return ChatMessageWidget(message: message);
+                            _messageKeys[index] ??= GlobalKey();
+                            return ChatMessageWidget(
+                              key: _messageKeys[index],
+                              message: message,
+                            );
                           },
                         ),
                   Positioned(
@@ -163,14 +172,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _scrollToBottom() {
+  void _scrollToMessageIndex(int messageIndex) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+      if (_scrollController.hasClients && messageIndex >= 0) {
+        final messageKey = _messageKeys[messageIndex];
+        final messageContext = messageKey?.currentContext;
+
+        if (messageContext != null) {
+          Scrollable.ensureVisible(
+            messageContext,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        } else {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
       }
     });
   }

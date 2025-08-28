@@ -35,7 +35,13 @@ class ChatCubit extends Cubit<ChatState> {
 
       emit(state.copyWith(loading: true));
       final messages = await _chatMessagesRepository.getAll();
-      emit(state.copyWith(messages: messages, loading: false));
+      emit(
+        state.copyWith(
+          messages: messages,
+          loading: false,
+          hasNewMessage: false,
+        ),
+      );
 
       _startTimeUpdateTimer();
 
@@ -72,7 +78,7 @@ class ChatCubit extends Cubit<ChatState> {
       );
 
       await _chatMessagesRepository.add(chatMessage);
-      await _refreshMessages();
+      await _refreshMessages(hasNewMessage: true);
 
       unawaited(
         _firebaseAnalytics.logEvent(
@@ -98,9 +104,17 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  Future<void> _refreshMessages() async {
+  Future<void> _refreshMessages({bool hasNewMessage = false}) async {
     final messages = await _chatMessagesRepository.getAll();
-    emit(state.copyWith(messages: messages));
+    final latestIndex = messages.isNotEmpty ? messages.length - 1 : -1;
+    emit(
+      state.copyWith(
+        messages: messages,
+        hasNewMessage: hasNewMessage,
+        shouldScrollToLatest: hasNewMessage,
+        latestMessageIndex: latestIndex,
+      ),
+    );
   }
 
   Future<void> deleteAllMessages() async {
@@ -150,7 +164,15 @@ class ChatCubit extends Cubit<ChatState> {
 
     final messagesWithThinking = List<ChatMessage>.from(messages)
       ..add(thinkingMessage);
-    emit(state.copyWith(messages: messagesWithThinking));
+    final latestIndex = messagesWithThinking.length - 1;
+    emit(
+      state.copyWith(
+        messages: messagesWithThinking,
+        hasNewMessage: true,
+        shouldScrollToLatest: true,
+        latestMessageIndex: latestIndex,
+      ),
+    );
 
     try {
       final responseContent = await _generativeAiService
@@ -167,7 +189,7 @@ class ChatCubit extends Cubit<ChatState> {
 
       await _chatMessagesRepository.add(finalMessage);
       emit(state.copyWith(generatingResponse: false));
-      await _refreshMessages();
+      await _refreshMessages(hasNewMessage: true);
 
       final responseTime = DateTime.now().difference(startTime).inMilliseconds;
       unawaited(
@@ -191,7 +213,7 @@ class ChatCubit extends Cubit<ChatState> {
 
       await _chatMessagesRepository.add(errorMessage);
       emit(state.copyWith(generatingResponse: false));
-      await _refreshMessages();
+      await _refreshMessages(hasNewMessage: true);
 
       unawaited(
         _firebaseAnalytics.logEvent(
@@ -219,7 +241,7 @@ class ChatCubit extends Cubit<ChatState> {
 
       await _chatMessagesRepository.add(errorMessage);
       emit(state.copyWith(generatingResponse: false));
-      await _refreshMessages();
+      await _refreshMessages(hasNewMessage: true);
 
       unawaited(
         _firebaseAnalytics.logEvent(
@@ -233,8 +255,18 @@ class ChatCubit extends Cubit<ChatState> {
   void _startTimeUpdateTimer() {
     _timeUpdateTimer?.cancel();
     _timeUpdateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      emit(state.copyWith(messages: List.from(state.messages)));
+      emit(
+        state.copyWith(
+          messages: List.from(state.messages),
+          hasNewMessage: false,
+          shouldScrollToLatest: false,
+        ),
+      );
     });
+  }
+
+  void markScrollCompleted() {
+    emit(state.copyWith(shouldScrollToLatest: false));
   }
 
   @override

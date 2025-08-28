@@ -36,11 +36,8 @@ class App extends StatelessWidget {
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: BlocProvider(
-          create: (context) => ChatCubit(
-            context.read(),
-            context.read(),
-            context.read(),
-          ),
+          create: (context) =>
+              ChatCubit(context.read(), context.read(), context.read()),
           child: const ChatScreen(),
         ),
       ),
