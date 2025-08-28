@@ -81,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           onSend: () => _sendMessage(context),
                           isLoading: state.generatingResponse,
                           isDisabled: state.loading,
-                          onClear: () => _showClearDialog(context),
+                          onClear: () async => _showClearDialog(context),
                         ),
                       ],
                     ),
