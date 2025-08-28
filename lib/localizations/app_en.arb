@@ -1,0 +1,40 @@
+{
+  "@@locale": "en",
+  "appTitle": "D&D Adventure Companion",
+  "clearChat": "Delete All Messages",
+  "startAdventure": "Welcome to your personal D&D adventure!",
+  "askAnything": "I'm your AI Dungeon Master, ready to guide you through epic roleplay adventures. Simply tell me what you want to play and which universe you'd like to explore - I'll set up everything for you! Veterans and newcomers alike are welcome to embark on this journey.",
+  "clearChatTitle": "Refresh Adventure",
+  "clearChatConfirmation": "Are you sure you want to refresh your adventure? This will delete all messages and start a new conversation from scratch.",
+  "cancel": "Cancel",
+  "clear": "Refresh",
+  "typeMessage": "Type your message...",
+  "justNow": "Just now",
+  "minutesAgo": "{minutes}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "thinking": "Thinking...",
+  "aiTimeoutError": "The request took too long to complete. Please try sending your message again.",
+  "aiGeneralError": "We encountered an unexpected error. Please try sending your message again."
+}
