@@ -39,8 +39,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         actions: [
           BlocSelector<ChatCubit, ChatState, bool>(
@@ -75,25 +77,34 @@ class _ChatScreenState extends State<ChatScreen> {
               if (state.messages.isNotEmpty) _scrollToBottom();
             },
             builder: (context, state) {
-              return Column(
+              return Stack(
                 children: [
-                  Expanded(
-                    child: state.messages.isEmpty
-                        ? _buildEmptyState()
-                        : ListView.builder(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            itemCount: state.messages.length,
-                            itemBuilder: (context, index) {
-                              final message = state.messages[index];
-                              return ChatMessageWidget(message: message);
-                            },
+                  state.messages.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          controller: _scrollController,
+                          padding: EdgeInsets.only(
+                            top:
+                                MediaQuery.of(context).padding.top +
+                                kToolbarHeight +
+                                8,
+                            bottom: 80,
                           ),
-                  ),
-                  MessageInput(
-                    controller: _messageInputController,
-                    onSend: () => _sendMessage(context),
-                    isLoading: state.generatingResponse,
+                          itemCount: state.messages.length,
+                          itemBuilder: (context, index) {
+                            final message = state.messages[index];
+                            return ChatMessageWidget(message: message);
+                          },
+                        ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: MessageInput(
+                      controller: _messageInputController,
+                      onSend: () => _sendMessage(context),
+                      isLoading: state.generatingResponse,
+                    ),
                   ),
                 ],
               );
@@ -105,35 +116,41 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('ᕙ(＠°▽°＠)ᕗ', style: theme.textTheme.headlineLarge),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 56),
-            child: Text(
-              l10n.startAdventure,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.onSurface.withAlpha(179),
-                fontFamily: 'Vidaloka',
+    return Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + kToolbarHeight + 8,
+        bottom: 100,
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SelectableText('👋🐱', style: theme.textTheme.headlineLarge),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 56),
+              child: SelectableText(
+                l10n.startAdventure,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withAlpha(179),
+                  fontFamily: 'Vidaloka',
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 56),
-            child: Text(
-              l10n.askAnything,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withAlpha(128),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 56),
+              child: SelectableText(
+                l10n.askAnything,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withAlpha(128),
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -162,19 +179,19 @@ class _ChatScreenState extends State<ChatScreen> {
     final shouldDelete = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
+        title: SelectableText(
           l10n.clearChatTitle,
           style: theme.textTheme.titleLarge!.copyWith(fontFamily: 'Vidaloka'),
         ),
-        content: Text(l10n.clearChatConfirmation),
+        content: SelectableText(l10n.clearChatConfirmation),
         actions: [
           TextButton(
             onPressed: Navigator.of(context).pop,
-            child: Text(l10n.cancel),
+            child: SelectableText(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.clear),
+            child: SelectableText(l10n.clear),
           ),
         ],
       ),

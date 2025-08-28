@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../localizations/app_localizations.dart';
+import 'package:simple_ai_dnd_chat_app/localizations/app_localizations.dart';
 
 class MessageInput extends StatefulWidget {
   const MessageInput({
@@ -44,89 +44,121 @@ class _MessageInputState extends State<MessageInput> {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.outline.withAlpha(51)),
-        ),
-      ),
-      child: SafeArea(
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 40, maxHeight: 120),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: theme.colorScheme.outline.withAlpha(77)),
-          ),
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              TextField(
-                controller: widget.controller,
-                maxLines: null,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  hintText: localizations.typeMessage,
-                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withAlpha(153),
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.only(
-                    left: 16,
-                    right: 48,
-                    top: 12,
-                    bottom: 12,
+    return SafeArea(
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(8, 24, 8, 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  theme.scaffoldBackgroundColor.withAlpha(0),
+                  theme.scaffoldBackgroundColor,
+                  theme.scaffoldBackgroundColor,
+                  theme.scaffoldBackgroundColor,
+                  theme.scaffoldBackgroundColor,
+                ],
+              ),
+            ),
+            child: TextField(
+              controller: widget.controller,
+              maxLines: null,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: localizations.typeMessage,
+                hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withAlpha(153),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withAlpha(120),
                   ),
                 ),
-                style: theme.textTheme.bodyMedium,
-                enabled: !widget.isLoading,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withAlpha(120),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withAlpha(120),
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withAlpha(120),
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withAlpha(120),
+                  ),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withAlpha(120),
+                  ),
+                ),
+                contentPadding: const EdgeInsets.only(
+                  left: 16,
+                  right: 48,
+                  top: 12,
+                  bottom: 12,
+                ),
               ),
-              Positioned(
-                right: 6,
-                bottom: 8,
-                child: Material(
-                  color: _canSend
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.outline.withAlpha(77),
-                  borderRadius: BorderRadius.circular(16),
-                  child: InkWell(
-                    onTap: _canSend ? widget.onSend : null,
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      child: widget.isLoading
-                          ? SizedBox(
-                              width: 14,
-                              height: 14,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  _canSend
-                                      ? theme.colorScheme.onPrimary
-                                      : theme.colorScheme.onSurface.withAlpha(
-                                          128,
-                                        ),
-                                ),
-                              ),
-                            )
-                          : Icon(
-                              Icons.arrow_upward,
-                              size: 18,
-                              color: _canSend
+              style: theme.textTheme.bodyMedium,
+              enabled: !widget.isLoading,
+            ),
+          ),
+          Positioned(
+            right: 16,
+            bottom: 20,
+            child: Material(
+              color: _canSend
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline.withAlpha(77),
+              borderRadius: BorderRadius.circular(16),
+              child: InkWell(
+                onTap: _canSend ? widget.onSend : null,
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  child: widget.isLoading
+                      ? SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              _canSend
                                   ? theme.colorScheme.onPrimary
                                   : theme.colorScheme.onSurface.withAlpha(128),
                             ),
-                    ),
-                  ),
+                          ),
+                        )
+                      : Icon(
+                          Icons.arrow_upward,
+                          size: 18,
+                          color: _canSend
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurface.withAlpha(128),
+                        ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

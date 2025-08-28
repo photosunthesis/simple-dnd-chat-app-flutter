@@ -64,14 +64,19 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
     final isUser = widget.message.role == Role.user;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.only(
+        left: isUser ? 64 : 16,
+        right: isUser ? 16 : 64,
+        top: 8,
+        bottom: 8,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
             Container(
-              width: 32,
-              height: 32,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: theme.colorScheme.primary.withAlpha(51),
@@ -98,7 +103,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
                       color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Text(
+                    child: SelectableText(
                       widget.message.content,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface,
@@ -130,7 +135,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
                     builder: (context, child) {
                       return Opacity(
                         opacity: _fadeAnimation.value,
-                        child: Text(
+                        child: SelectableText(
                           _formatTime(widget.message.createdAt),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withAlpha(153),
@@ -146,8 +151,8 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
           if (isUser) ...[
             const SizedBox(width: 12),
             Container(
-              width: 32,
-              height: 32,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: theme.colorScheme.secondary.withAlpha(51),
@@ -208,7 +213,7 @@ class _MarkdownText extends StatelessWidget {
         case 'h3':
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
+            child: SelectableText(
               node.textContent,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -231,7 +236,7 @@ class _MarkdownText extends StatelessWidget {
                 color: theme.colorScheme.outline.withAlpha(51),
               ),
             ),
-            child: Text(
+            child: SelectableText(
               node.textContent,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontFamily: 'IBMPlexMono',
@@ -252,7 +257,7 @@ class _MarkdownText extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('• ', style: style),
+                            SelectableText('• ', style: style),
                             Expanded(
                               child: _buildInlineContent(context, child, theme),
                             ),
@@ -269,7 +274,7 @@ class _MarkdownText extends StatelessWidget {
           return _buildInlineContent(context, node, theme);
       }
     } else {
-      return Text(node.textContent, style: style);
+      return SelectableText(node.textContent, style: style);
     }
   }
 
@@ -278,7 +283,7 @@ class _MarkdownText extends StatelessWidget {
     md.Element element,
     ThemeData theme,
   ) {
-    final spans = <InlineSpan>[];
+    final spans = <TextSpan>[];
 
     for (final child in element.children ?? []) {
       if (child is md.Text) {
@@ -320,7 +325,7 @@ class _MarkdownText extends StatelessWidget {
       }
     }
 
-    return RichText(text: TextSpan(children: spans));
+    return SelectableText.rich(TextSpan(children: spans));
   }
 }
 
@@ -364,7 +369,7 @@ class _ThinkingIndicatorState extends State<_ThinkingIndicator>
       animation: _dotAnimation,
       builder: (context, child) {
         final dots = '.' * _dotAnimation.value;
-        return Text(
+        return SelectableText(
           '${widget.localizations.thinking}$dots',
           style: widget.style?.copyWith(
             fontStyle: FontStyle.italic,
