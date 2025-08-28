@@ -48,6 +48,17 @@ Just start typing! Tell the AI what kind of adventure you want:
 
 The AI will guide you through creating characters, rolling dice, and telling stories.
 
+### Dice Rolling 🎲
+
+This app follows authentic D&D mechanics - when the AI asks for dice rolls, you need to input your results manually:
+
+- The AI will pause and ask: "Please roll d20 + 3 against DC 15"
+- Roll your physical dice (or use a dice app)
+- Type your result: "I rolled a 18" or "18"
+- The AI will continue the story based on your roll
+
+This creates a more authentic tabletop experience where your dice rolls truly matter!
+
 ## Project structure 📁
 
 ```
