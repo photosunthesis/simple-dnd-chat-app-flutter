@@ -131,33 +131,14 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
 
   Widget _buildUserMessage() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: MarkdownBody(
-        data: widget.message.content,
-        styleSheet: MarkdownStyleSheet(
-          p: theme.textTheme.bodyMedium!.copyWith(
-            color: theme.colorScheme.onSurface,
-            height: 1.8,
-          ),
-          code: theme.textTheme.bodyMedium?.copyWith(
-            fontFamily: 'IBMPlexMono',
-            fontSize: 12,
-            height: 1.8,
-          ),
-          horizontalRuleDecoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: theme.colorScheme.tertiary.withAlpha(64),
-                width: 0.5,
-              ),
-            ),
-          ),
-        ),
-        selectable: true,
+      child: _buildMarkdownBody(
+        textColor: theme.colorScheme.onSurface,
+        ruleColor: theme.colorScheme.tertiary.withAlpha(64),
       ),
     );
   }
@@ -187,28 +168,30 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
       builder: (context, child) {
         return Opacity(
           opacity: _fadeAnimation.value,
-          child: MarkdownBody(
-            data: widget.message.content,
-            styleSheet: MarkdownStyleSheet(
-              p: theme.textTheme.bodyMedium!.copyWith(height: 1.8),
-              code: theme.textTheme.bodyMedium?.copyWith(
-                fontFamily: 'IBMPlexMono',
-                fontSize: 12,
-                height: 1.8,
-              ),
-              horizontalRuleDecoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: theme.colorScheme.outline.withAlpha(64),
-                    width: 0.5,
-                  ),
-                ),
-              ),
-            ),
-            selectable: true,
+          child: _buildMarkdownBody(
+            ruleColor: theme.colorScheme.outline.withAlpha(64),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildMarkdownBody({Color? textColor, required Color ruleColor}) {
+    return MarkdownBody(
+      data: widget.message.content,
+      styleSheet: MarkdownStyleSheet(
+        p: theme.textTheme.bodyMedium!.copyWith(color: textColor, height: 1.6),
+        pPadding: const EdgeInsets.only(bottom: 8),
+        code: theme.textTheme.bodyMedium!.copyWith(
+          fontFamily: 'IBMPlexMono',
+          fontSize: 12,
+          height: 1.6,
+        ),
+        horizontalRuleDecoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: ruleColor, width: 0.5)),
+        ),
+      ),
+      selectable: true,
     );
   }
 
