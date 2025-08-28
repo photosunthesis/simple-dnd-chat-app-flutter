@@ -86,11 +86,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
   Widget _buildAvatarSection() {
     return const Row(
       children: [
-        SizedBox(
-          width: 44,
-          height: 44,
-          child: Center(child: Text('🎲', style: TextStyle(fontSize: 24))),
-        ),
+        Center(child: Text('🎲', style: TextStyle(fontSize: 20))),
         SizedBox(width: 12),
       ],
     );
@@ -100,11 +96,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
     return const Row(
       children: [
         SizedBox(width: 12),
-        SizedBox(
-          width: 44,
-          height: 44,
-          child: Center(child: Text('👤', style: TextStyle(fontSize: 24))),
-        ),
+        Center(child: Text('👤', style: TextStyle(fontSize: 20))),
       ],
     );
   }
