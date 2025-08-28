@@ -138,6 +138,16 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
                               backgroundColor: theme.colorScheme.surface
                                   .withAlpha(26),
                             ),
+                            horizontalRuleDecoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: theme.colorScheme.outline.withAlpha(
+                                    64,
+                                  ),
+                                  width: 0.5,
+                                ),
+                              ),
+                            ),
                           ),
                           selectable: true,
                         ),
