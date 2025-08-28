@@ -105,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SelectableText('👋🐱', style: theme.textTheme.headlineLarge),
+            SelectableText('👋🤠', style: theme.textTheme.headlineLarge),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 56),

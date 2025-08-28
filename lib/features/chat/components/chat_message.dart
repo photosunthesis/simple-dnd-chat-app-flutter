@@ -74,16 +74,10 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
-            Container(
+            const SizedBox(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                color: theme.colorScheme.primary.withAlpha(51),
-              ),
-              child: const Center(
-                child: Text('🎲', style: TextStyle(fontSize: 18)),
-              ),
+              child: Center(child: Text('🎲', style: TextStyle(fontSize: 24))),
             ),
             const SizedBox(width: 12),
           ],
@@ -176,16 +170,10 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
           ),
           if (isUser) ...[
             const SizedBox(width: 12),
-            Container(
+            const SizedBox(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                color: theme.colorScheme.secondary.withAlpha(51),
-              ),
-              child: const Center(
-                child: Text('⚔️', style: TextStyle(fontSize: 18)),
-              ),
+              child: Center(child: Text('👤', style: TextStyle(fontSize: 24))),
             ),
           ],
         ],
