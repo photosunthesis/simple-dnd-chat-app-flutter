@@ -20,6 +20,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final _scrollController = ScrollController();
   final _messageKeys = <int, GlobalKey>{};
 
+  bool get _isMobile => MediaQuery.of(context).size.width < 600;
+
   @override
   void initState() {
     super.initState();
@@ -100,34 +102,31 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 8,
         bottom: 100,
+        left: MediaQuery.of(context).size.width * (_isMobile ? 0.12 : 0.08),
+        right: MediaQuery.of(context).size.width * (_isMobile ? 0.12 : 0.08),
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SelectableText('👋🤠', style: theme.textTheme.headlineLarge),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 56),
-              child: SelectableText(
-                l10n.startAdventure,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withAlpha(179),
-                  fontFamily: 'Vidaloka',
-                ),
-                textAlign: TextAlign.center,
+            const SizedBox(height: 18),
+            SelectableText(
+              l10n.startAdventure,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                color: theme.colorScheme.onSurface.withAlpha(179),
+                fontFamily: 'Vidaloka',
+                fontSize: _isMobile ? 20 : 24,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 56),
-              child: SelectableText(
-                l10n.askAnything,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withAlpha(128),
-                ),
-                textAlign: TextAlign.center,
+            SelectableText(
+              l10n.askAnything,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withAlpha(128),
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
