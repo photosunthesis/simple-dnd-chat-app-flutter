@@ -70,165 +70,176 @@ class _MessageInputState extends State<MessageInput> {
       child: Stack(
         alignment: Alignment.bottomRight,
         children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(8, 24, 8, 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  theme.scaffoldBackgroundColor.withAlpha(0),
-                  theme.scaffoldBackgroundColor,
-                  theme.scaffoldBackgroundColor,
-                  theme.scaffoldBackgroundColor,
-                  theme.scaffoldBackgroundColor,
-                ],
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Focus(
-                  onKeyEvent: _handleKeyEvent,
-                  child: TextField(
-                    controller: widget.controller,
-                    maxLines: 8,
-                    minLines: 1,
-                    textCapitalization: TextCapitalization.sentences,
-                    onTapOutside: (_) => FocusScope.of(context).unfocus(),
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.newline,
-                    decoration: InputDecoration(
-                      hintText: localizations.typeMessage,
-                      hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withAlpha(153),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outlineVariant.withAlpha(
-                            120,
-                          ),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outlineVariant.withAlpha(
-                            120,
-                          ),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outlineVariant.withAlpha(
-                            120,
-                          ),
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outlineVariant.withAlpha(
-                            120,
-                          ),
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outlineVariant.withAlpha(
-                            120,
-                          ),
-                        ),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outlineVariant.withAlpha(
-                            120,
-                          ),
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.only(
-                        left: 16,
-                        right: 48,
-                        top: 12,
-                        bottom: 12,
-                      ),
-                    ),
-                    style: theme.textTheme.bodyMedium,
-                    enabled: !widget.isLoading,
-                  ),
-                ),
-                BlocSelector<ChatCubit, ChatState, bool>(
-                  selector: (state) =>
-                      state.loading ||
-                      state.generatingResponse ||
-                      state.messages.isEmpty,
-                  builder: (context, disabled) {
-                    return Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: GestureDetector(
-                        onTap: disabled ? null : widget.onClear?.call,
-                        child: Text(
-                          localizations.clearChat,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            decoration: TextDecoration.underline,
-                            color: disabled
-                                ? theme.colorScheme.onSurface.withAlpha(128)
-                                : theme.colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            right: 16,
-            bottom: 49,
-            child: Material(
-              color: _canSend
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.outline.withAlpha(77),
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
-                onTap: _canSend ? widget.onSend : null,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  alignment: Alignment.center,
-                  child: widget.isLoading
-                      ? SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              _canSend && !widget.isDisabled
-                                  ? theme.colorScheme.onPrimary
-                                  : theme.colorScheme.onSurface.withAlpha(128),
-                            ),
-                          ),
-                        )
-                      : Icon(
-                          Icons.arrow_upward,
-                          size: 18,
-                          color: _canSend
-                              ? theme.colorScheme.onPrimary
-                              : theme.colorScheme.onSurface.withAlpha(128),
-                        ),
-                ),
-              ),
-            ),
-          ),
+          _buildInputContainer(theme, localizations),
+          _buildSendButton(theme),
         ],
       ),
+    );
+  }
+
+  Widget _buildInputContainer(ThemeData theme, AppLocalizations localizations) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(8, 24, 8, 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            theme.scaffoldBackgroundColor.withAlpha(0),
+            theme.scaffoldBackgroundColor,
+            theme.scaffoldBackgroundColor,
+            theme.scaffoldBackgroundColor,
+            theme.scaffoldBackgroundColor,
+          ],
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTextField(theme, localizations),
+          _buildClearChatButton(theme, localizations),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(ThemeData theme, AppLocalizations localizations) {
+    return Focus(
+      onKeyEvent: _handleKeyEvent,
+      child: TextField(
+        controller: widget.controller,
+        maxLines: 8,
+        minLines: 1,
+        textCapitalization: TextCapitalization.sentences,
+        onTapOutside: (_) => FocusScope.of(context).unfocus(),
+        keyboardType: TextInputType.multiline,
+        textInputAction: TextInputAction.newline,
+        decoration: _buildInputDecoration(theme, localizations),
+        style: theme.textTheme.bodyMedium,
+        enabled: !widget.isLoading,
+      ),
+    );
+  }
+
+  InputDecoration _buildInputDecoration(
+    ThemeData theme,
+    AppLocalizations localizations,
+  ) {
+    final borderSide = BorderSide(
+      color: theme.colorScheme.outlineVariant.withAlpha(120),
+    );
+    final borderRadius = BorderRadius.circular(18);
+
+    return InputDecoration(
+      hintText: localizations.typeMessage,
+      hintStyle: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.onSurface.withAlpha(153),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: borderRadius,
+        borderSide: borderSide,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: borderRadius,
+        borderSide: borderSide,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: borderRadius,
+        borderSide: borderSide,
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: borderRadius,
+        borderSide: borderSide,
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: borderRadius,
+        borderSide: borderSide,
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: borderRadius,
+        borderSide: borderSide,
+      ),
+      contentPadding: const EdgeInsets.only(
+        left: 16,
+        right: 48,
+        top: 12,
+        bottom: 12,
+      ),
+    );
+  }
+
+  Widget _buildClearChatButton(
+    ThemeData theme,
+    AppLocalizations localizations,
+  ) {
+    return BlocSelector<ChatCubit, ChatState, bool>(
+      selector: (state) =>
+          state.loading || state.generatingResponse || state.messages.isEmpty,
+      builder: (context, disabled) {
+        return Container(
+          padding: const EdgeInsets.only(top: 10),
+          child: GestureDetector(
+            onTap: disabled ? null : widget.onClear?.call,
+            child: Text(
+              localizations.clearChat,
+              style: theme.textTheme.bodySmall?.copyWith(
+                decoration: TextDecoration.underline,
+                color: disabled
+                    ? theme.colorScheme.onSurface.withAlpha(128)
+                    : theme.colorScheme.primary,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSendButton(ThemeData theme) {
+    return Positioned(
+      right: 16,
+      bottom: 49,
+      child: Material(
+        color: _canSend
+            ? theme.colorScheme.primary
+            : theme.colorScheme.outline.withAlpha(77),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: _canSend ? widget.onSend : null,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: 32,
+            height: 32,
+            alignment: Alignment.center,
+            child: _buildSendButtonContent(theme),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSendButtonContent(ThemeData theme) {
+    if (widget.isLoading) {
+      return SizedBox(
+        width: 14,
+        height: 14,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            _canSend && !widget.isDisabled
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurface.withAlpha(128),
+          ),
+        ),
+      );
+    }
+
+    return Icon(
+      Icons.arrow_upward,
+      size: 18,
+      color: _canSend
+          ? theme.colorScheme.onPrimary
+          : theme.colorScheme.onSurface.withAlpha(128),
     );
   }
 }

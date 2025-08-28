@@ -13,27 +13,28 @@ class ChatMessageWidget extends StatefulWidget {
 }
 
 class _ChatMessageWidgetState extends State<ChatMessageWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
-  late final theme = Theme.of(context);
-  late final localizations = AppLocalizations.of(context)!;
+    with TickerProviderStateMixin {
+  late final _fadeController = AnimationController(
+    duration: const Duration(milliseconds: 600),
+    vsync: this,
+  )..value = 1.0;
 
-  @override
-  void initState() {
-    super.initState();
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    );
+  late final _fadeAnimation = CurvedAnimation(
+    parent: _fadeController,
+    curve: Curves.easeInOut,
+  );
 
-    // Always start with full opacity for initial render
-    _fadeController.value = 1.0;
-  }
+  late final _thinkingController = AnimationController(
+    duration: const Duration(milliseconds: 1500),
+    vsync: this,
+  )..repeat();
+
+  late final _thinkingAnimation = IntTween(begin: 0, end: 3).animate(
+    CurvedAnimation(parent: _thinkingController, curve: Curves.easeInOut),
+  );
+
+  ThemeData get theme => Theme.of(context);
+  AppLocalizations get localizations => AppLocalizations.of(context)!;
 
   @override
   void didUpdateWidget(ChatMessageWidget oldWidget) {
@@ -56,6 +57,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
   @override
   void dispose() {
     _fadeController.dispose();
+    _thinkingController.dispose();
     super.dispose();
   }
 
@@ -73,111 +75,157 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isUser) ...[
-            const SizedBox(
-              width: 44,
-              height: 44,
-              child: Center(child: Text('🎲', style: TextStyle(fontSize: 24))),
-            ),
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: isUser
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
-              children: [
-                if (isUser)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: SelectableText(
-                      widget.message.content,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  )
-                else if (widget.message.isThinking)
-                  SizedBox(
-                    height: 44,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: _ThinkingIndicator(
-                        localizations: localizations,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                    ),
-                  )
-                else
-                  AnimatedBuilder(
-                    animation: _fadeAnimation,
-                    builder: (context, child) {
-                      return Opacity(
-                        opacity: _fadeAnimation.value,
-                        child: MarkdownBody(
-                          data: widget.message.content,
-                          styleSheet: MarkdownStyleSheet(
-                            p: theme.textTheme.bodyMedium!.copyWith(
-                              height: 1.8,
-                            ),
-                            code: theme.textTheme.bodyMedium?.copyWith(
-                              fontFamily: 'IBMPlexMono',
-                              backgroundColor: theme.colorScheme.surface
-                                  .withAlpha(26),
-                            ),
-                            horizontalRuleDecoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: theme.colorScheme.outline.withAlpha(
-                                    64,
-                                  ),
-                                  width: 0.5,
-                                ),
-                              ),
-                            ),
-                          ),
-                          selectable: true,
-                        ),
-                      );
-                    },
-                  ),
-                if (!widget.message.isThinking) ...[
-                  const SizedBox(height: 4),
-                  AnimatedBuilder(
-                    animation: _fadeAnimation,
-                    builder: (context, child) {
-                      return Opacity(
-                        opacity: _fadeAnimation.value,
-                        child: SelectableText(
-                          _formatTime(widget.message.createdAt),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withAlpha(80),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (isUser) ...[
-            const SizedBox(width: 12),
-            const SizedBox(
-              width: 44,
-              height: 44,
-              child: Center(child: Text('👤', style: TextStyle(fontSize: 24))),
-            ),
-          ],
+          if (!isUser) _buildAvatarSection(),
+          Expanded(child: _buildMessageContent(isUser)),
+          if (isUser) _buildUserAvatarSection(),
         ],
       ),
+    );
+  }
+
+  Widget _buildAvatarSection() {
+    return const Row(
+      children: [
+        SizedBox(
+          width: 44,
+          height: 44,
+          child: Center(child: Text('🎲', style: TextStyle(fontSize: 24))),
+        ),
+        SizedBox(width: 12),
+      ],
+    );
+  }
+
+  Widget _buildUserAvatarSection() {
+    return const Row(
+      children: [
+        SizedBox(width: 12),
+        SizedBox(
+          width: 44,
+          height: 44,
+          child: Center(child: Text('👤', style: TextStyle(fontSize: 24))),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMessageContent(bool isUser) {
+    return Column(
+      crossAxisAlignment: isUser
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        if (isUser)
+          _buildUserMessage()
+        else if (widget.message.isThinking)
+          _buildThinkingIndicator()
+        else
+          _buildModelMessage(),
+        if (!widget.message.isThinking) ...[
+          const SizedBox(height: 4),
+          _buildTimestamp(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildUserMessage() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: MarkdownBody(
+        data: widget.message.content,
+        styleSheet: MarkdownStyleSheet(
+          p: theme.textTheme.bodyMedium!.copyWith(
+            color: theme.colorScheme.onSurface,
+            height: 1.8,
+          ),
+          code: theme.textTheme.bodyMedium?.copyWith(
+            fontFamily: 'IBMPlexMono',
+            fontSize: 12,
+            height: 1.8,
+          ),
+          horizontalRuleDecoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: theme.colorScheme.tertiary.withAlpha(64),
+                width: 0.5,
+              ),
+            ),
+          ),
+        ),
+        selectable: true,
+      ),
+    );
+  }
+
+  Widget _buildThinkingIndicator() {
+    return SizedBox(
+      height: 44,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: AnimatedBuilder(
+          animation: _thinkingAnimation,
+          builder: (context, child) {
+            final dots = '.' * (_thinkingAnimation.value + 1);
+            return Text(
+              '${localizations.thinking}$dots',
+              style: theme.textTheme.bodyMedium,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModelMessage() {
+    return AnimatedBuilder(
+      animation: _fadeAnimation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _fadeAnimation.value,
+          child: MarkdownBody(
+            data: widget.message.content,
+            styleSheet: MarkdownStyleSheet(
+              p: theme.textTheme.bodyMedium!.copyWith(height: 1.8),
+              code: theme.textTheme.bodyMedium?.copyWith(
+                fontFamily: 'IBMPlexMono',
+                fontSize: 12,
+                height: 1.8,
+              ),
+              horizontalRuleDecoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: theme.colorScheme.outline.withAlpha(64),
+                    width: 0.5,
+                  ),
+                ),
+              ),
+            ),
+            selectable: true,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTimestamp() {
+    return AnimatedBuilder(
+      animation: _fadeAnimation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _fadeAnimation.value,
+          child: SelectableText(
+            _formatTime(widget.message.createdAt),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withAlpha(80),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -194,57 +242,5 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
     } else {
       return localizations.daysAgo(difference.inDays);
     }
-  }
-}
-
-class _ThinkingIndicator extends StatefulWidget {
-  const _ThinkingIndicator({required this.localizations, required this.style});
-
-  final AppLocalizations localizations;
-  final TextStyle? style;
-
-  @override
-  State<_ThinkingIndicator> createState() => _ThinkingIndicatorState();
-}
-
-class _ThinkingIndicatorState extends State<_ThinkingIndicator>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<int> _dotAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-    _dotAnimation = IntTween(begin: 0, end: 3).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    _animationController.repeat();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _dotAnimation,
-      builder: (context, child) {
-        final dots = '.' * _dotAnimation.value;
-        return SelectableText(
-          '${widget.localizations.thinking}$dots',
-          style: widget.style?.copyWith(
-            fontStyle: FontStyle.italic,
-            color: widget.style?.color?.withAlpha(179),
-          ),
-        );
-      },
-    );
   }
 }
