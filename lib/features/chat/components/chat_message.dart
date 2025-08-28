@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:simple_ai_dnd_chat_app/data/models/chat_message.dart';
 import 'package:simple_ai_dnd_chat_app/localizations/app_localizations.dart';
 
@@ -78,7 +78,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(18),
                 color: theme.colorScheme.primary.withAlpha(51),
               ),
               child: const Center(
@@ -111,9 +111,15 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
                     ),
                   )
                 else if (widget.message.isThinking)
-                  _ThinkingIndicator(
-                    localizations: localizations,
-                    style: theme.textTheme.bodyMedium,
+                  SizedBox(
+                    height: 44,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: _ThinkingIndicator(
+                        localizations: localizations,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
                   )
                 else
                   AnimatedBuilder(
@@ -121,9 +127,17 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
                     builder: (context, child) {
                       return Opacity(
                         opacity: _fadeAnimation.value,
-                        child: _MarkdownText(
-                          content: widget.message.content,
-                          style: theme.textTheme.bodyMedium,
+                        child: MarkdownBody(
+                          data: widget.message.content,
+                          styleSheet: MarkdownStyleSheet(
+                            p: theme.textTheme.bodyMedium,
+                            code: theme.textTheme.bodyMedium?.copyWith(
+                              fontFamily: 'IBMPlexMono',
+                              backgroundColor: theme.colorScheme.surface
+                                  .withAlpha(26),
+                            ),
+                          ),
+                          selectable: true,
                         ),
                       );
                     },
@@ -138,7 +152,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
                         child: SelectableText(
                           _formatTime(widget.message.createdAt),
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withAlpha(153),
+                            color: theme.colorScheme.onSurface.withAlpha(80),
                           ),
                         ),
                       );
@@ -154,7 +168,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(18),
                 color: theme.colorScheme.secondary.withAlpha(51),
               ),
               child: const Center(
@@ -180,147 +194,6 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
     } else {
       return localizations.daysAgo(difference.inDays);
     }
-  }
-}
-
-class _MarkdownText extends StatelessWidget {
-  const _MarkdownText({required this.content, required this.style});
-
-  final String content;
-  final TextStyle? style;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final document = md.Document(
-      extensionSet: md.ExtensionSet.gitHubFlavored,
-      encodeHtml: false,
-    );
-
-    final nodes = document.parseLines(content.split('\n'));
-    final spans = <TextSpan>[];
-
-    for (var i = 0; i < nodes.length; i++) {
-      spans.addAll(_buildNodeSpans(nodes[i], theme, isFirst: i == 0));
-    }
-
-    return SelectableText.rich(TextSpan(children: spans), style: style);
-  }
-
-  List<TextSpan> _buildNodeSpans(
-    md.Node node,
-    ThemeData theme, {
-    bool isFirst = false,
-  }) {
-    final spans = <TextSpan>[];
-
-    if (node is md.Element) {
-      switch (node.tag) {
-        case 'h1':
-        case 'h2':
-        case 'h3':
-          spans.add(
-            TextSpan(
-              text: node.textContent,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                height: 1.3,
-              ),
-            ),
-          );
-          spans.add(const TextSpan(text: '\n'));
-          break;
-        case 'p':
-          if (!isFirst) {
-            spans.add(const TextSpan(text: '\n'));
-          }
-          spans.addAll(_buildInlineSpans(node, theme));
-          spans.add(const TextSpan(text: '\n'));
-          break;
-        case 'code':
-          if (!isFirst) {
-            spans.add(const TextSpan(text: '\n'));
-          }
-          spans.add(
-            TextSpan(
-              text: node.textContent,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontFamily: 'IBMPlexMono',
-                backgroundColor: theme.colorScheme.surface.withAlpha(26),
-                height: 1.3,
-              ),
-            ),
-          );
-          spans.add(const TextSpan(text: '\n'));
-          break;
-        case 'ul':
-        case 'ol':
-          if (!isFirst) {
-            spans.add(const TextSpan(text: '\n'));
-          }
-          for (final child in node.children ?? []) {
-            if (child is md.Element && child.tag == 'li') {
-              spans.add(const TextSpan(text: '•'));
-              spans.addAll(_buildInlineSpans(child, theme));
-              spans.add(const TextSpan(text: '\n'));
-            }
-          }
-          spans.add(const TextSpan(text: '\n'));
-          break;
-        default:
-          spans.addAll(_buildInlineSpans(node, theme));
-      }
-    } else {
-      spans.add(TextSpan(text: node.textContent, style: style));
-    }
-
-    return spans;
-  }
-
-  List<TextSpan> _buildInlineSpans(md.Element element, ThemeData theme) {
-    final spans = <TextSpan>[];
-
-    for (final child in element.children ?? []) {
-      if (child is md.Text) {
-        spans.add(TextSpan(text: child.text, style: style));
-      } else if (child is md.Element) {
-        switch (child.tag) {
-          case 'strong':
-          case 'b':
-            spans.add(
-              TextSpan(
-                text: child.textContent,
-                style: style?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            );
-            break;
-          case 'em':
-          case 'i':
-            spans.add(
-              TextSpan(
-                text: child.textContent,
-                style: style?.copyWith(fontStyle: FontStyle.italic),
-              ),
-            );
-            break;
-          case 'code':
-            spans.add(
-              TextSpan(
-                text: child.textContent,
-                style: style?.copyWith(
-                  fontFamily: 'IBMPlexMono',
-                  backgroundColor: theme.colorScheme.surface.withAlpha(26),
-                ),
-              ),
-            );
-            break;
-          default:
-            spans.add(TextSpan(text: child.textContent, style: style));
-        }
-      }
-    }
-
-    return spans;
   }
 }
 

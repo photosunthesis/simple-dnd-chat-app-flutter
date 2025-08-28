@@ -58,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ? _buildEmptyState()
                       : ListView.builder(
                           controller: _scrollController,
-                          padding: const EdgeInsets.only(top: 20, bottom: 80),
+                          padding: const EdgeInsets.only(top: 20, bottom: 100),
                           itemCount: state.messages.length,
                           itemBuilder: (context, index) {
                             final message = state.messages[index];
