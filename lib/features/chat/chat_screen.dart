@@ -170,6 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final shouldDelete = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        constraints: const BoxConstraints(maxWidth: 600),
         title: SelectableText(
           l10n.clearChatTitle,
           style: theme.textTheme.titleLarge!.copyWith(fontFamily: 'Vidaloka'),
@@ -178,11 +179,11 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           TextButton(
             onPressed: Navigator.of(context).pop,
-            child: SelectableText(l10n.cancel),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: SelectableText(l10n.clear),
+            child: Text(l10n.clear),
           ),
         ],
       ),
