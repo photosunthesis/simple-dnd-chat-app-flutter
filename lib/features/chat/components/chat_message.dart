@@ -130,7 +130,9 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
                         child: MarkdownBody(
                           data: widget.message.content,
                           styleSheet: MarkdownStyleSheet(
-                            p: theme.textTheme.bodyMedium,
+                            p: theme.textTheme.bodyMedium!.copyWith(
+                              height: 1.8,
+                            ),
                             code: theme.textTheme.bodyMedium?.copyWith(
                               fontFamily: 'IBMPlexMono',
                               backgroundColor: theme.colorScheme.surface
