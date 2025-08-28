@@ -3,7 +3,7 @@
   "appTitle": "D&D Adventure Companion",
   "clearChat": "Reset Chat",
   "startAdventure": "Welcome to your personal D&D adventure!",
-  "askAnything": "Welcome, adventurer! I'm your AI Dungeon Master. Describe your desired setting and character, and I'll create an immersive D&D experience.When I ask for dice rolls, input your results manually (e.g., 'I rolled 15' or just '15') to preserve authentic tabletop mechanics.\n\nLet's begin your adventure!",
+  "askAnything": "Welcome, adventurer! I'm your AI Dungeon Master. Describe your desired setting and character, and I'll create an immersive D&D experience. When I ask for dice rolls, input your results manually (e.g., 'I rolled 15' or just '15') to preserve authentic tabletop mechanics.\n\nLet's begin your adventure!",
   "clearChatTitle": "Refresh Adventure",
   "clearChatConfirmation": "Are you sure you want to refresh your adventure? This will delete all messages and start a new conversation from scratch.",
   "cancel": "Cancel",
