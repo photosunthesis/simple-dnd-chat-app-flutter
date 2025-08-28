@@ -122,7 +122,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
         else
           _buildModelMessage(),
         if (!widget.message.isThinking) ...[
-          const SizedBox(height: 4),
+          SizedBox(height: isUser ? 4 : 0),
           _buildTimestamp(),
         ],
       ],
@@ -215,15 +215,11 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
   String _formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-
-    if (difference.inMinutes < 1) {
-      return localizations.justNow;
-    } else if (difference.inHours < 1) {
-      return localizations.minutesAgo(difference.inMinutes);
-    } else if (difference.inDays < 1) {
-      return localizations.hoursAgo(difference.inHours);
-    } else {
-      return localizations.daysAgo(difference.inDays);
-    }
+    return switch (difference) {
+      Duration(inMinutes: < 1) => localizations.justNow,
+      Duration(inHours: < 1) => localizations.minutesAgo(difference.inMinutes),
+      Duration(inDays: < 1) => localizations.hoursAgo(difference.inHours),
+      _ => localizations.daysAgo(difference.inDays),
+    };
   }
 }
