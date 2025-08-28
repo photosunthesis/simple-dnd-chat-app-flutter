@@ -108,15 +108,16 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 8,
         bottom: 100,
-        left: MediaQuery.of(context).size.width * (_isMobile ? 0.12 : 0.08),
-        right: MediaQuery.of(context).size.width * (_isMobile ? 0.12 : 0.08),
+        left: MediaQuery.of(context).size.width * (_isMobile ? 0.10 : 0.06),
+        right: MediaQuery.of(context).size.width * (_isMobile ? 0.10 : 0.06),
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('👋🤠', style: theme.textTheme.headlineLarge),
-            const SizedBox(height: 18),
+            Text('👋🤠', style: theme.textTheme.titleLarge),
+            const SizedBox(height: 4),
             Text(
               l10n.startAdventure,
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -124,7 +125,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 fontFamily: 'Vidaloka',
                 fontSize: _isMobile ? 20 : 24,
               ),
-              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
@@ -132,7 +132,6 @@ class _ChatScreenState extends State<ChatScreen> {
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withAlpha(128),
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
