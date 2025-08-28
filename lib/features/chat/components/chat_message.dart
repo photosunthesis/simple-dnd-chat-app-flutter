@@ -191,7 +191,6 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
           border: Border(bottom: BorderSide(color: ruleColor, width: 0.5)),
         ),
       ),
-      selectable: true,
     );
   }
 
@@ -201,7 +200,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
       builder: (context, child) {
         return Opacity(
           opacity: _fadeAnimation.value,
-          child: SelectableText(
+          child: Text(
             _formatTime(widget.message.createdAt),
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurface.withAlpha(80),

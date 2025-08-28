@@ -42,55 +42,61 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 800),
-          child: BlocConsumer<ChatCubit, ChatState>(
-            listener: (context, state) {
-              if (state.shouldScrollToLatest && state.latestMessageIndex >= 0) {
-                _scrollToMessageIndex(state.latestMessageIndex);
-                context.read<ChatCubit>().markScrollCompleted();
-              }
-            },
-            builder: (context, state) {
-              return Stack(
-                children: [
-                  state.messages.isEmpty
-                      ? _buildEmptyState()
-                      : ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.only(top: 20, bottom: 100),
-                          itemCount: state.messages.length,
-                          itemBuilder: (context, index) {
-                            final message = state.messages[index];
-                            _messageKeys[index] ??= GlobalKey();
-                            return ChatMessageWidget(
-                              key: _messageKeys[index],
-                              message: message,
-                            );
-                          },
-                        ),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        MessageInput(
-                          controller: _messageInputController,
-                          onSend: () => _sendMessage(context),
-                          isLoading: state.generatingResponse,
-                          isDisabled: state.loading,
-                          onClear: () async => _showClearDialog(context),
-                        ),
-                      ],
+    return SelectionArea(
+      child: Scaffold(
+        body: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: BlocConsumer<ChatCubit, ChatState>(
+              listener: (context, state) {
+                if (state.shouldScrollToLatest &&
+                    state.latestMessageIndex >= 0) {
+                  _scrollToMessageIndex(state.latestMessageIndex);
+                  context.read<ChatCubit>().markScrollCompleted();
+                }
+              },
+              builder: (context, state) {
+                return Stack(
+                  children: [
+                    state.messages.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.only(
+                              top: 20,
+                              bottom: 140,
+                            ),
+                            itemCount: state.messages.length,
+                            itemBuilder: (context, index) {
+                              final message = state.messages[index];
+                              _messageKeys[index] ??= GlobalKey();
+                              return ChatMessageWidget(
+                                key: _messageKeys[index],
+                                message: message,
+                              );
+                            },
+                          ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          MessageInput(
+                            controller: _messageInputController,
+                            onSend: () => _sendMessage(context),
+                            isLoading: state.generatingResponse,
+                            isDisabled: state.loading,
+                            onClear: () async => _showClearDialog(context),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            },
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -109,9 +115,9 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SelectableText('👋🤠', style: theme.textTheme.headlineLarge),
+            Text('👋🤠', style: theme.textTheme.headlineLarge),
             const SizedBox(height: 18),
-            SelectableText(
+            Text(
               l10n.startAdventure,
               style: theme.textTheme.headlineSmall?.copyWith(
                 color: theme.colorScheme.onSurface.withAlpha(179),
@@ -121,7 +127,7 @@ class _ChatScreenState extends State<ChatScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            SelectableText(
+            Text(
               l10n.askAnything,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withAlpha(128),
@@ -170,11 +176,11 @@ class _ChatScreenState extends State<ChatScreen> {
       context: context,
       builder: (context) => AlertDialog(
         constraints: const BoxConstraints(maxWidth: 600),
-        title: SelectableText(
+        title: Text(
           l10n.clearChatTitle,
           style: theme.textTheme.titleLarge!.copyWith(fontFamily: 'Vidaloka'),
         ),
-        content: SelectableText(l10n.clearChatConfirmation),
+        content: Text(l10n.clearChatConfirmation),
         actions: [
           TextButton(
             onPressed: Navigator.of(context).pop,
