@@ -121,6 +121,7 @@ class ChatCubit extends Cubit<ChatState> {
     try {
       emit(state.copyWith(loading: true));
 
+      _generativeAiService.clearCache();
       await _chatMessagesRepository.deleteAll();
       await _refreshMessages();
 
