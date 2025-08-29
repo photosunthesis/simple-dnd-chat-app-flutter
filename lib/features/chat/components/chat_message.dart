@@ -63,45 +63,15 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
 
   @override
   Widget build(BuildContext context) {
-    final isUser = widget.message.role == Role.user;
-
     return Padding(
-      padding: EdgeInsets.only(
-        left: isUser ? 40 : 16,
-        right: isUser ? 16 : 40,
-        top: 8,
-        bottom: 8,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!isUser) _buildAvatarSection(),
-          Expanded(child: _buildMessageContent(isUser)),
-          if (isUser) _buildUserAvatarSection(),
-        ],
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Expanded(
+        child: _buildMessageContent(isUser: widget.message.role == Role.user),
       ),
     );
   }
 
-  Widget _buildAvatarSection() {
-    return const Row(
-      children: [
-        Center(child: Text('🎲', style: TextStyle(fontSize: 20))),
-        SizedBox(width: 12),
-      ],
-    );
-  }
-
-  Widget _buildUserAvatarSection() {
-    return const Row(
-      children: [
-        SizedBox(width: 12),
-        Center(child: Text('👤', style: TextStyle(fontSize: 20))),
-      ],
-    );
-  }
-
-  Widget _buildMessageContent(bool isUser) {
+  Widget _buildMessageContent({required bool isUser}) {
     return Column(
       crossAxisAlignment: isUser
           ? CrossAxisAlignment.end
@@ -126,7 +96,12 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(18),
+          topRight: Radius.circular(18),
+          bottomLeft: Radius.circular(18),
+          bottomRight: Radius.circular(10),
+        ),
       ),
       child: _buildMarkdownBody(
         textColor: theme.colorScheme.onSurface,

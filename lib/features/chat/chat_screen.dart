@@ -123,7 +123,6 @@ class _ChatScreenState extends State<ChatScreen> {
               style: theme.textTheme.headlineSmall?.copyWith(
                 color: theme.colorScheme.onSurface.withAlpha(179),
                 fontFamily: 'Vidaloka',
-                fontSize: _isMobile ? 20 : 24,
               ),
             ),
             const SizedBox(height: 8),
