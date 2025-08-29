@@ -20,6 +20,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final _scrollController = ScrollController();
   final _messageKeys = <int, GlobalKey>{};
 
+  bool _hasScrolledOnInit = false;
+
   bool get _isMobile => MediaQuery.of(context).size.width < 600;
 
   @override
@@ -53,6 +55,22 @@ class _ChatScreenState extends State<ChatScreen> {
                     state.latestMessageIndex >= 0) {
                   _scrollToMessageIndex(state.latestMessageIndex);
                   context.read<ChatCubit>().markScrollCompleted();
+                }
+
+                if (!state.loading &&
+                    state.messages.isNotEmpty &&
+                    !state.hasNewMessage &&
+                    !state.shouldScrollToLatest &&
+                    !_hasScrolledOnInit) {
+                  // Scroll to bottom when messages are first loaded (initialization)
+                  _hasScrolledOnInit = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (_scrollController.hasClients) {
+                      _scrollController.jumpTo(
+                        _scrollController.position.maxScrollExtent,
+                      );
+                    }
+                  });
                 }
               },
               builder: (context, state) {
