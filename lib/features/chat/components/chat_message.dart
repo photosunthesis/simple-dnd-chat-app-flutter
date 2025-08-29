@@ -65,14 +65,13 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Expanded(
-        child: _buildMessageContent(isUser: widget.message.role == Role.user),
-      ),
+      child: _buildMessageContent(isUser: widget.message.role == Role.user),
     );
   }
 
   Widget _buildMessageContent({required bool isUser}) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: isUser
           ? CrossAxisAlignment.end
           : CrossAxisAlignment.start,
