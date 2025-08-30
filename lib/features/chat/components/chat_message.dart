@@ -92,7 +92,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
 
   Widget _buildUserMessage() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
+      padding: const EdgeInsets.fromLTRB(14, 4, 14, 4),
       decoration: BoxDecoration(
         color: theme.colorScheme.tertiary,
         borderRadius: const BorderRadius.only(
@@ -151,7 +151,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
       data: widget.message.content,
       styleSheet: MarkdownStyleSheet(
         p: theme.textTheme.bodyMedium!.copyWith(color: textColor, height: 1.6),
-        pPadding: const EdgeInsets.only(bottom: 8),
+        pPadding: const EdgeInsets.only(top: 4, bottom: 4),
         code: theme.textTheme.bodyMedium!.copyWith(
           fontFamily: 'IBMPlexMono',
           fontSize: 12,

@@ -164,7 +164,7 @@ class ChatCubit extends Cubit<ChatState> {
     try {
       final responseContent = await _generativeAiService
           .generateResponse(messages: contentMessages)
-          .timeout(const Duration(seconds: 30));
+          .timeout(const Duration(minutes: 3));
 
       // Save the final complete message to repository
       final finalMessage = ChatMessage(
