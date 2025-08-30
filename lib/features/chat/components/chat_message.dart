@@ -92,7 +92,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
 
   Widget _buildUserMessage() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 8, 14, 0),
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
       decoration: BoxDecoration(
         color: theme.colorScheme.tertiary,
         borderRadius: const BorderRadius.only(
@@ -105,6 +105,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
       child: _buildMarkdownBody(
         textColor: theme.colorScheme.onSurface,
         ruleColor: theme.colorScheme.tertiary.withAlpha(64),
+        codeblockBackground: theme.colorScheme.secondary,
       ),
     );
   }
@@ -142,7 +143,11 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
     );
   }
 
-  Widget _buildMarkdownBody({Color? textColor, required Color ruleColor}) {
+  Widget _buildMarkdownBody({
+    required Color ruleColor,
+    Color? textColor,
+    Color? codeblockBackground,
+  }) {
     return MarkdownBody(
       data: widget.message.content,
       styleSheet: MarkdownStyleSheet(
@@ -153,8 +158,13 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
           fontSize: 12,
           height: 1.6,
         ),
+        codeblockPadding: const EdgeInsets.all(12),
+        codeblockDecoration: BoxDecoration(
+          border: Border.all(color: codeblockBackground ?? ruleColor),
+          borderRadius: BorderRadius.circular(4),
+        ),
         horizontalRuleDecoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: ruleColor, width: 0.5)),
+          border: Border(bottom: BorderSide(color: ruleColor)),
         ),
       ),
     );
