@@ -9,6 +9,7 @@ environment:
   sdk: ^3.9.0
 
 dependencies:
+  sentry_flutter: ^9.6.0
   cupertino_icons: ^1.0.8
   firebase_ai: ^3.1.0
   firebase_analytics: ^12.0.0
@@ -24,6 +25,7 @@ dependencies:
   path_provider: ^2.1.5
 
 dev_dependencies:
+  sentry_dart_plugin: ^3.1.1
   flutter_lints: ^5.0.0
   flutter_native_splash: ^2.4.6
   flutter_test:
@@ -67,3 +69,9 @@ icons_launcher:
     web:
       enable: true
       image_path: "assets/icon/main_icon.png"
+
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: true
+  project: simple-dnd-chat-flutter
+  org: personal-projects-organization

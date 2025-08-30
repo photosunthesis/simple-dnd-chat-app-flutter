@@ -64,3 +64,5 @@ firebase.json
 ios/build/**
 lib/localizations/*.dart
 .firebase**
+
+sentry.properties

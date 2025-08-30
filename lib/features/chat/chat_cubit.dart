@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:simple_ai_dnd_chat_app/data/models/chat_message.dart';
 import 'package:simple_ai_dnd_chat_app/data/repositories/chat_messages_repository.dart';
 import 'package:simple_ai_dnd_chat_app/data/services/generative_ai_service.dart';
@@ -52,13 +53,8 @@ class ChatCubit extends Cubit<ChatState> {
         ),
       );
     } catch (e, s) {
+      unawaited(Sentry.captureException(e, stackTrace: s));
       emit(state.copyWith(errorMessage: e.toString()));
-      unawaited(
-        _firebaseAnalytics.logEvent(
-          name: 'error_occurred',
-          parameters: {'error': e.toString(), 'stacktrace': s.toString()},
-        ),
-      );
     } finally {
       emit(state.copyWith(loading: false));
     }
@@ -92,13 +88,8 @@ class ChatCubit extends Cubit<ChatState> {
 
       await _generateModelResponse();
     } catch (e, s) {
+      unawaited(Sentry.captureException(e, stackTrace: s));
       emit(state.copyWith(errorMessage: e.toString()));
-      unawaited(
-        _firebaseAnalytics.logEvent(
-          name: 'error_occurred',
-          parameters: {'error': e.toString(), 'stacktrace': s.toString()},
-        ),
-      );
     } finally {
       emit(state.copyWith(generatingResponse: false));
     }
@@ -132,13 +123,8 @@ class ChatCubit extends Cubit<ChatState> {
         ),
       );
     } catch (e, s) {
+      unawaited(Sentry.captureException(e, stackTrace: s));
       emit(state.copyWith(errorMessage: e.toString()));
-      unawaited(
-        _firebaseAnalytics.logEvent(
-          name: 'error_occurred',
-          parameters: {'error': e.toString(), 'stacktrace': s.toString()},
-        ),
-      );
     } finally {
       emit(state.copyWith(loading: false));
     }
@@ -216,6 +202,7 @@ class ChatCubit extends Cubit<ChatState> {
       emit(state.copyWith(generatingResponse: false));
       await _refreshMessages(hasNewMessage: true);
 
+      unawaited(Sentry.captureException(e, stackTrace: s));
       unawaited(
         _firebaseAnalytics.logEvent(
           name: 'ai_response_timeout',
@@ -223,12 +210,6 @@ class ChatCubit extends Cubit<ChatState> {
             'timeout_duration_ms': 30000,
             'conversation_length': messages.length + 1,
           },
-        ),
-      );
-      unawaited(
-        _firebaseAnalytics.logEvent(
-          name: 'error_occurred',
-          parameters: {'error': e.toString(), 'stacktrace': s.toString()},
         ),
       );
     } catch (e, s) {
@@ -240,16 +221,10 @@ class ChatCubit extends Cubit<ChatState> {
         createdAt: createdAt,
       );
 
+      unawaited(Sentry.captureException(e, stackTrace: s));
       await _chatMessagesRepository.add(errorMessage);
       emit(state.copyWith(generatingResponse: false));
       await _refreshMessages(hasNewMessage: true);
-
-      unawaited(
-        _firebaseAnalytics.logEvent(
-          name: 'error_occurred',
-          parameters: {'error': e.toString(), 'stacktrace': s.toString()},
-        ),
-      );
     }
   }
 
