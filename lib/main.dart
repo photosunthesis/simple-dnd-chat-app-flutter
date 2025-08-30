@@ -46,7 +46,7 @@ void main() {
           null,
         ),
       ],
-      systemInstruction: Content.system(AiSystemInstructions.systemPrompt),
+      systemInstruction: Content.system(aiSystemPrompt),
     );
 
     await SentryFlutter.init(
