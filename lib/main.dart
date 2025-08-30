@@ -38,13 +38,7 @@ void main() {
     final chatMessagesBox = await Hive.openBox<ChatMessage>('chat_messages');
 
     final generativeModel = FirebaseAI.googleAI().generativeModel(
-      model: 'gemini-2.5-flash-lite',
-      generationConfig: GenerationConfig(
-        candidateCount: 1,
-        temperature: 0.9,
-        topP: 0.95,
-        topK: 40,
-      ),
+      model: 'gemini-2.5-flash',
       safetySettings: [
         SafetySetting(
           HarmCategory.sexuallyExplicit,
