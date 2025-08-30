@@ -92,14 +92,14 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
 
   Widget _buildUserMessage() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 2),
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 0),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.tertiary,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(18),
           topRight: Radius.circular(18),
           bottomLeft: Radius.circular(18),
-          bottomRight: Radius.circular(10),
+          bottomRight: Radius.circular(8),
         ),
       ),
       child: _buildMarkdownBody(
