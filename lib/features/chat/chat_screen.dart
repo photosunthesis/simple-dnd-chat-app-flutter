@@ -57,20 +57,21 @@ class _ChatScreenState extends State<ChatScreen> {
                   context.read<ChatCubit>().markScrollCompleted();
                 }
 
-                if (!state.loading &&
-                    state.messages.isNotEmpty &&
-                    !state.hasNewMessage &&
-                    !state.shouldScrollToLatest &&
-                    !_hasScrolledOnInit) {
-                  // Scroll to bottom when messages are first loaded (initialization)
+                // Only run this block once, after messages are loaded
+                if (!_hasScrolledOnInit && !state.loading) {
                   _hasScrolledOnInit = true;
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (_scrollController.hasClients) {
-                      _scrollController.jumpTo(
-                        _scrollController.position.maxScrollExtent,
-                      );
-                    }
-                  });
+                  if (state.messages.isNotEmpty &&
+                      !state.hasNewMessage &&
+                      !state.shouldScrollToLatest) {
+                    // Scroll to bottom when messages are first loaded (initialization)
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (_scrollController.hasClients) {
+                        _scrollController.jumpTo(
+                          _scrollController.position.maxScrollExtent,
+                        );
+                      }
+                    });
+                  }
                 }
               },
               builder: (context, state) {

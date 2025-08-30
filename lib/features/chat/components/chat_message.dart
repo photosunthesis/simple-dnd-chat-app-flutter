@@ -105,7 +105,6 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
       child: _buildMarkdownBody(
         textColor: theme.colorScheme.onSurface,
         ruleColor: theme.colorScheme.tertiary.withAlpha(64),
-        codeblockBackground: theme.colorScheme.secondary,
       ),
     );
   }
@@ -146,7 +145,7 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
   Widget _buildMarkdownBody({
     required Color ruleColor,
     Color? textColor,
-    Color? codeblockBackground,
+    Color? blockBackgroundColor,
   }) {
     return MarkdownBody(
       data: widget.message.content,
@@ -160,7 +159,13 @@ class _ChatMessageWidgetState extends State<ChatMessageWidget>
         ),
         codeblockPadding: const EdgeInsets.all(12),
         codeblockDecoration: BoxDecoration(
-          border: Border.all(color: codeblockBackground ?? ruleColor),
+          border: Border.all(color: blockBackgroundColor ?? ruleColor),
+          borderRadius: BorderRadius.circular(4),
+          color: blockBackgroundColor ?? Colors.transparent,
+        ),
+        blockquoteDecoration: BoxDecoration(
+          border: Border.all(color: blockBackgroundColor ?? ruleColor),
+          color: Colors.transparent, // Always transparent for blockquotes
           borderRadius: BorderRadius.circular(4),
         ),
         horizontalRuleDecoration: BoxDecoration(
